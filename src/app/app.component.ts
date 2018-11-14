@@ -6,5 +6,18 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'loadtester';
+  uname = 'nik';//'loadtester'+ Math.round(Math.random()*100);
+  users=[]
+  counter=0;
+  constructor(){
+    for(var i=1;i<100;i++){
+      this.users.push(i)
+      this.counter++;
+    }
+  }
+  executed(user){
+    console.error(user)
+    this.users.splice(user-1,1)
+    this.users.push(this.counter++)
+  }
 }
