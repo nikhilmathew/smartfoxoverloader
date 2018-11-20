@@ -29,6 +29,7 @@ export class InstanceComponent implements OnInit {
   roomLockSubscription: Subscription;
   logInEvent: Subscription;
   @Input() username: string;
+  @Input() ip:string;
   smartfoxProfileforPlayer = {
     name: '',
     profilePic: 'assets/images/searching/ic_cyan.svg',
@@ -40,7 +41,7 @@ export class InstanceComponent implements OnInit {
 
   ngOnInit() {
     this.smartfoxProfileforPlayer.name = this.username
-    this.sfs.initializeSmartFoxConnection(this.username)
+    this.sfs.initializeSmartFoxConnection(this.username,this.ip)
 
     this.loginEventListener();
       this.ExtensionListener()
@@ -65,7 +66,7 @@ export class InstanceComponent implements OnInit {
 
       if (evt.cmd == 'cq') {
         console.log('received question fetch call', this.username, evt.params.u)
-        if (this.username == evt.params.u)
+        // if (this.username == evt.params.u)
           this.fetchQuestionCall()
 
         //console.log(evt)
@@ -127,7 +128,10 @@ export class InstanceComponent implements OnInit {
       if (status == 1) {
         console.log('login successful sending game room request')
         this.sfs.setUserprofile(this.smartfoxProfileforPlayer)
-        this.sfs.sendGameRoomRequest("free", 5, 20, 1500, 100, false, null)
+        this.sfs.sendGameRoomRequest("free", 5,10, 1500, 100, false, null)
+        // setTimeout(()=>{
+        //   this.endSequence()
+        // },10000)
       }
       else {
         console.error("Login failure", status,this.username)
@@ -239,6 +243,7 @@ export class InstanceComponent implements OnInit {
     console.log(this.playerList)
     let userListObj = this.playerList
     this.userCount = userListObj.length;
+    console.log(this.userCount)
       this.sfs.sendConsumptionSuccess(this.userCount)
   }
   roomJoinListener() {
@@ -260,6 +265,10 @@ export class InstanceComponent implements OnInit {
     this.roomVariablesUpdateSubscription = this.sfs.RoomVariablesUpdate.subscribe((variable) => {
       // console.warn("room variable update fired ")
         this.time = variable
+        // if(this.time==2){
+        //   console.warn("exiting")
+        //   this.endSequence()
+        // }
     })
   }
 

@@ -1,1 +1,13 @@
-<app-instance *ngFor="let x of users" username="{{uname}}_{{x}}" (complete)='executed($event)'></app-instance>
+<div>
+  <input placeholder="serverip" type="text" [(ngModel)]="serverip">
+  </div>
+  <div>
+  <input placeholder="user" type="text" [(ngModel)]="uname">
+</div>
+<div>
+  <input placeholder="count" type="text" [(ngModel)]="count">
+</div>
+<div>
+  <button (click)="start()">start</button>
+</div>
+<app-instance *ngFor="let x of users" username="{{x}}" ip="{{serverip}}" (complete)='executed($event)'></app-instance>

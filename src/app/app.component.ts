@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Endpoints } from './config';
 
 @Component({
   selector: 'app-root',
@@ -6,18 +7,27 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  serverip: any="stg-sf.sportsunity.co";
   uname = 'nik';//'loadtester'+ Math.round(Math.random()*100);
   users=[]
   counter=0;
-  constructor(){
-    for(var i=1;i<100;i++){
-      this.users.push(i)
-      this.counter++;
+  count =100;
+  constructor(private endpoint:Endpoints){
+    
+  }
+  start(){
+    console.log("values are ",this.uname,this.serverip)
+    this.endpoint.smartfox_url=this.serverip
+    for(let i=1;i<this.count;i++){
+      // setTimeout(()=>{
+        this.users.push('nik_'+i)
+        this.counter++;
+      // },1000*i)
     }
   }
   executed(user){
-    console.error(user)
-    this.users.splice(user-1,1)
-    this.users.push(this.counter++)
-  }
+    console.error(user,this.users,this.users.indexOf(user))
+    this.users.splice(this.users.indexOf(user),1)
+    this.users.push('nik_'+this.counter++)
+}
 }

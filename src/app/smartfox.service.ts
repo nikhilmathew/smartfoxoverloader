@@ -40,9 +40,12 @@ export class SmartfoxService {
   ngOnInit() {
     console.warn("CREATED SMARTFOX INSTANCE")
   }
-  initializeSmartFoxConnection(user) {
+  initializeSmartFoxConnection(user,ip) {
+    this.path.smartfoxServerConfig.host=ip
+
     console.log("Smartfox initialization started for "+user+" old value is =", this.sfs)
     if (this.sfs == null) {
+      console.error(this.path.smartfoxServerConfig)
       this.sfs = new SFS2X.SmartFox(this.path.smartfoxServerConfig);
       this.initializeEventListeners();
       this.username = user
@@ -263,7 +266,7 @@ export class SmartfoxService {
   }
   onRoomJoined(evtParams) {
     //console.log("Room joined successfully: " + evtParams.room);//called when room joined
-    console.log(evtParams.room.name, evtParams.room.variables.mk.value, "lobby var", evtParams.room.variables.ll.value)
+    // console.log(evtParams.room.name, evtParams.room.variables.mk.value, "lobby var", evtParams.room.variables.ll.value)
     let userListObj = this.makePlayerList()
     this.roomId = evtParams.room
     this.RoomJoinedEvent.next([evtParams.room.name, evtParams.room.variables.mk.value, userListObj])
@@ -292,14 +295,19 @@ export class SmartfoxService {
 
   }
   onUserCountChange(evtParams, self = this) {
-    // console.error("usercount change caught in sfs service", evtParams)
+    console.error("usercount change caught in sfs service", evtParams)
+    console.warn(this.sfs.lastJoinedRoom)
+
     var room = evtParams.room;
     var uCount = evtParams.uCount;
     var sCount = evtParams.sCount;
-    let userListObj = this.makePlayerList()
+    if(room.name==this.sfs.lastJoinedRoom.name){
+      let userListObj = this.makePlayerList()
     // if (uCount == 2) {
     //call ready request
     this.OpponentJoinedEvent.next([evtParams, userListObj])
+    }
+    
     // }
 
     //console.log("Room: " + room.name + " now contains " + uCount + " users and " + sCount + " spectators");
@@ -350,7 +358,7 @@ export class SmartfoxService {
     if (playerList != null)
       playerList.forEach(element => {
 
-        // console.warn("player detail- ", element.name, element.isItMe, element.variables.ui.value, element.variables.ui.value, element.variables.uer.value)
+        console.warn("player detail- ", element.name, element.isItMe, element.variables.ui.value, element.variables.ui.value, element.variables.uer.value)
         playerListObj.push({ username: element.name, name: element.variables.un.value, profilePic: element.variables.ui.value, elo: element.variables.uer.value, score: 0 })
 
       });
@@ -540,6 +548,7 @@ export class SmartfoxService {
     // qdata.rq.value = data
     // var obj = {a:JSON.stringify(data),c:parseInt(data.quiz_count)}
     var obj = { a: JSON.stringify(data), c: parseInt(data.quiz_count) }
+   
     //    var variable =[] ;
     //use extension
     this.sfs.send(new SFS2X.Requests.System.ExtensionRequest("uid", obj, this.sfs.lastJoinedRoom));
